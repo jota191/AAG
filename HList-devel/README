@@ -1,0 +1,53 @@
+(C) 2004--2010, Oleg Kiselyov, Ralf Laemmel, Keean Schupke
+
+Contributors:
+	Justin Bailey, Brian Bloniarz, Gwern Branwen, Einar Karttunen,
+	and Adam Vogt
+
+
+The HList library and samples
+
+----------------------------------------------------------------------
+
+Getting the code
+
+> darcs get http://code.haskell.org/HList
+
+----------------------------------------------------------------------
+
+Pushing changes
+
+You need an account at code.haskell.org
+
+> cd HList
+> darcs pull user@code.haskell.org:/srv/darcs/HList
+> darcs record
+> darcs push
+
+----------------------------------------------------------------------
+
+This distribution covers all essential issues discussed in the HList paper,
+though the implementation has been adapted to ghc features implemented
+after the paper's writing.
+
+Additional examples and HList operations are provided.
+The code from the database section of the HList paper is not included
+since doing so would have implied inclusion of substantial packages,
+namely the underlying infrastructure for database access library.
+
+You can get HList from Hackage or from Darcs:
+
+$ cabal update && cabal install HList
+
+Or:
+
+$ darcs get --partial http://code.haskell.org/HList/
+$ cd HList; cabal install
+
+The code works --- within the limits exercised in the source files ---
+for GHC-7.6 and GHC-7.8 and GHC-7.10. Older compilers are not supported.
+
+One may run "cabal test" to check the distribution.
+
+See ChangeLog for updates.
+

@@ -1,0 +1,121 @@
+pristine:06a61223f8e2492b0e98ddd572c012a4c9d192e06008b69954ef43bcb6274608
+Starting with inventory:
+0000001837-198d30c8fbed6f35edbbb1a75ef2b10cf0cfc82320a70bcc145a55bfe4a45c4b
+[TAG 0.4.2
+Adam Vogt <vogt.adam@gmail.com>**20151222225339
+ Ignore-this: 8c915e1726ed5963f2ead1fec20511ce
+] 
+hash: 0000001278-a70ef61c591ba7f1dc45468baef91b36f783fa691ee8e6d157cae46507e68cd2
+[compile with ghc-8.0-rc2
+Adam Vogt <vogt.adam@gmail.com>**20160225060821
+ Ignore-this: 6ad574ffc9cb78fb967f2b57576ac911
+] 
+hash: 0000002118-18a7be815d9de1bc1974a2ea4eafc9b50941bc9a7601fa199bd3e49d51d37bc5
+[remove unnecessary comment
+Adam Vogt <vogt.adam@gmail.com>**20160304015106
+ Ignore-this: e31d5080c223f97d1e89f3631312ef8d
+] 
+hash: 0000000190-34092711489ec7159e762b001eaaa51b3ee9812db82a46e3d656b6d7e71ae22c
+[remove obsolete comment
+Adam Vogt <vogt.adam@gmail.com>**20160307002519
+ Ignore-this: 7acaa3bdbfcd0b89ce43945fcabb87f5
+] 
+hash: 0000000370-90eabcc179388000adb9468e8a81f49cfea138ff96f67f4bc88278e1eb1620f2
+[comment out IsLabel instance
+Adam Vogt <vogt.adam@gmail.com>**20160307002600
+ Ignore-this: 9f6961cc875f0405e0b61ebb85cad897
+] 
+hash: 0000000687-5c0654f45ac91d99f1826d63e096467b204f0bf7e67e0ae9e209ded7dcd8516d
+[add Deep.hs
+Adam Vogt <vogt.adam@gmail.com>**20160307002706
+ Ignore-this: 7921462093948277a771edde36bf066b
+] 
+hash: 0000010371-9551eb1a14b51cc4eb8b011203998642fb80a50e55309aa0fa13ed6bfb82501b
+[disable doctest for ghc-8
+Adam Vogt <vogt.adam@gmail.com>**20160307002955
+ Ignore-this: ecc7f879cbf9de9456fc574baf107608
+] 
+hash: 0000000404-16af3feea1e1a0c13045104a88766d08ae3207b0c70acb348df915a3b1783c85
+[generalize toLabel to produce labels of other kinds in some cases
+Adam Vogt <vogt.adam@gmail.com>**20160308173605
+ Ignore-this: 5ace02ae2ec2a7eb473bf0d5de02a25c
+] 
+hash: 0000001620-0b88134025c8a77cd3debf77e1e338dabcb5fc590db51c0d60b7abbb2f63b477
+[rename deep to dredge because lens already has deep
+Adam Vogt <vogt.adam@gmail.com>**20160308190616
+ Ignore-this: c47a08741c4f6fa4ad353b9943cf6b59
+] 
+hash: 0000007435-e2a0ab95d20ca400995ef8dc23db10adf171782a68181ecd33bf140f4be510e5
+[hLens' Label can now replace ticPrism' / tipyLens'
+Adam Vogt <vogt.adam@gmail.com>**20160308191406
+ Ignore-this: 53b574ede95c2f6e2decff00e7982562
+ 
+ Previously the Labelable instance would not get chosen until
+ the kind variable on Label was fixed to *.
+] 
+hash: 0000001131-6be3e99a7a54b5ce13d1f6f891b21dfbd56864f8be42e195e960c338eed3204a
+[reimplement tipyLens such that it can change types
+Adam Vogt <vogt.adam@gmail.com>**20160308191823
+ Ignore-this: 2fe1c3cf504e6e77265ca6af4dd25657
+] 
+hash: 0000001120-63a1a0c344d02123c28997a8a3340631d20809a1e21e9ddf452a94fe420d49aa
+[define simple lenses in terms of isSimple (see comment on isSimple)
+Adam Vogt <vogt.adam@gmail.com>**20160308221555
+ Ignore-this: f11f888a97b250c7b1826cab96f2e158
+] 
+hash: 0000003221-bd06444de5e0807ab293b842f039330a99bd971f83f7ed4c25f97398279acc1e
+[add HTake and HDrop
+Adam Vogt <vogt.adam@gmail.com>**20160315194422
+ Ignore-this: bbf37a463864b3013e42b65b6b8ec389
+] 
+hash: 0000001278-4b780ca266021e3c235fc6fc3d59d4df6a70bab13f2ae0d05e9e0a25fd0ef842
+[add a test for sortForRecordUS
+Adam Vogt <vogt.adam@gmail.com>**20160315194748
+ Ignore-this: 92c51f8207aa4638e59c0c8985d62934
+] 
+hash: 0000000745-8b2146d6ac27837733c780d59bc2a591458b9a66681b4c0ce190949c98985b65
+[fix a commented type signature
+Adam Vogt <vogt.adam@gmail.com>**20160315194834
+ Ignore-this: fd61f59e2a2d5b7f127e6de6c32bc786
+] 
+hash: 0000000275-6179357365e90e5682767b5c7466a22aefaf1f7c28d92e74ec6fc89f427e0973
+[EnsureLabel had inadvertently overlapping instances
+Adam Vogt <vogt.adam@gmail.com>**20160315211218
+ Ignore-this: b109cdbeefb47a35e4d285f0da6f5f26
+] 
+hash: 0000000550-276863d1e7934664f82af26035ee584a100933b42f48b3ccf02a0260ed28e8b3
+[reword tipyLens change
+Adam Vogt <vogt.adam@gmail.com>**20160317053447
+ Ignore-this: b1ec6df26cb8dbd68c457351cf7a54e8
+] 
+hash: 0000000195-8d8c70cfe30c617c0032ad212d8bf0ac47a63e64b61a9bcc3d517a2a9efd2288
+[clarifiy documentation
+Adam Vogt <vogt.adam@gmail.com>**20160317053506
+ Ignore-this: 9ad12fb5c84e1ba278fd2268cfa86237
+] 
+hash: 0000002434-d43fcb3091fd11713898ba7c3218706afef18e1fc20f5a2167472d0f0f89b826
+[work around a possible type checker bug in ghc-8.0.0-RC2
+Adam Vogt <vogt.adam@gmail.com>**20160317055045
+ Ignore-this: 88b100c15c52e9eb8ac23cb39e8f521d
+] 
+hash: 0000000351-40e7a8fe137acc5df3e4e91ca73523bd0a5f6ab39aadf447462672f4f3a9d4ae
+[rework Fail uses. See changelog
+Adam Vogt <vogt.adam@gmail.com>**20160515195524
+ Ignore-this: 21baa9c9678f9ce0dc0ff23a0df47969
+] 
+hash: 0000011466-1f5b9e0cfdde0ceb7b1982f3939e20e10d357b049222c4b1d1ed0606883c1dce
+[cabal file markup
+Adam Vogt <vogt.adam@gmail.com>**20160515195558
+ Ignore-this: b88cf02dbbeddb055d5c6d9d40845920
+] 
+hash: 0000000299-d5a455d43e79411356664ecdede99d72a9ce8351f3a3eef31aa909bb89ac461e
+[bump ghc versions under Tested-With:
+Adam Vogt <vogt.adam@gmail.com>**20160515195656
+ Ignore-this: 760470c5caa777381da5554c988917e2
+] 
+hash: 0000000293-bab42246ac8c31ee479ca8fe424d6384887e2a28d4178adf970eb734940bd5a9
+[reduce the test case size to speed up cabal test
+Adam Vogt <vogt.adam@gmail.com>**20160515195706
+ Ignore-this: 68cc11d04b189bdf4542b36ffd815565
+] 
+hash: 0000000303-17f3ade418f64ec1b0ec610d96c27f436e1d30f88e093766a23b8e81cb165b44

@@ -1,0 +1,418 @@
+0.4.3
+Add Dredge.hs
+
+Move toLabel to another class to allow it to return Labels with
+kinds other than Symbol.
+
+tipyLens can now change the element type
+
+Add hTake and hDrop
+
+Use TypeError for prettier error messages in ghc-8.0 (still backwards
+compatible)
+
+Improve HFind and HUpdateAtHNat error messages by mentioning the whole
+record being changed
+
+22 Dec 2015
+0.4.2 Release
+
+Depend on base-orphans to avoid multiple definitions of Typeable '[],
+Typeable '(:)
+
+3 Aug 2015
+0.4.1 Release
+
+Add RecordU.hs, a record type with elements stored in unboxed arrays
+
+Documentation fixes (Thor Michael Støre)
+
+5 May 2015
+0.4 Release
+
+16 Apr 2015
+Make tests run (and pass) when called by "runghc Setup test"
+
+Add hNot, and add HNotFD which is injective (unlike the type family)
+
+Replace uses of `HLength xs ~ n` with `HLengthEq xs n`.
+
+15 Mar 2015
+Add HCurry.hs.
+
+Redefine Arity such that `Arity f (HSucc HZero)` will refine the
+type of `f` to `x -> y`.
+
+SameLabels is generalized so that functions like 'asLabelsOf' do
+not need to explicitly convert a that specifies the ordering of
+labels. Additional constraints might be needed to restore the old
+behavior:
+
+> type SameLabelsOld x y = (HAllTaggedLV x, HAllTaggedLV y, SameLabels x y)
+
+Similarly HExtend instances Proxy intended for making Proxies
+used to disambiguate labels (see 'asLabelsOf' again).
+
+Add hMapOutV, zipVR, extendsVariant. Rename the previous
+splitVariant to splitVariant1, and use the name splitVariant for
+a function that splits a Variant into two Variants.
+
+Add projected to Labelable.hs which allows working on a smaller
+Record or Variant.
+
+Add HasFieldM for lookups that return a default value if the
+field is missing.
+
+Split HZip into two classes: class HUnzip r x y xy => HZip r x y xy.
+This allows instance HUnzip Variant x y xy.
+
+Add Data,Typeable,Enum,Bounded,Ord,Monoid instances for Variant and TIC
+
+Implement HRLabelSet in terms of HLabelSet, which simplifies
+inferred types that would otherwise have redundancy (HLabelSet
+(LabelsOf r), HRLabelSet r)
+
+Move definitions into FakePrelude, and split up
+examples/Properties.hs into separate modules to help with
+compilation times when adding new tests.
+
+15 Feb 2015
+Change HList to a data family (see comments in HList.hs).
+
+Change the Show instance for TIP and HList to use "," not ", " as the
+separator for consistency with Record and ordinary lists.
+
+Parameterize HZip over the collection type to work on Record, TIP as well as
+HList.
+
+Add and use HProxies for building the spine of a HList from the type, to avoid
+having HLists of undefined/error values somewhere.
+
+Build with ghc-7.10 RC1. RecordU/RecordUS is moved to broken/ instead of
+updating it.
+
+9 Sep 2014
+Change the ordering of the list produced by HLeftUnion / (.<++.)
+to better match hAppend / ++ suggested by the name.
+
+25 Aug 2014
+Add HSort, which provides a merge sort and a quick sort.
+
+Support _ (wildcard) with the pun quasiquoter, and make
+patterns such as [pun| x y _ |] constrain the Record or Variant
+to have at least 3 elements.
+
+Reduce the number of parameters for Labelable
+
+Allow operations with different label kinds (ie.
+Record [Tagged 1 x, Tagged "y" Int]) to proceed as expected.
+
+13 Jul 2014
+Start RecordU and RecordUS, a variation on Record where the values
+are stored in unboxed array(s).
+
+Add Partition, GroupBy and Span.
+
+Add list2HList and isos sameLength and sameLabels.
+
+23 Jun 2014
+TIPTransform and TIPTransformM become part of the distribution,
+and missing fields are reported with the Fail superclass
+technique.
+
+Projection of a TIP to a tuple is reimplemented without an explicit
+type signature. The functions are exported as tipyTuple,
+tipyTuple3 etc.
+
+Conversion between HLists and up to 6-tuples done with HTuple.
+
+Add ZipVariant, Unvariant, splitVariant, extendVariant,
+an instance Eq (Variant v) and an instance Labelable TIC.
+
+Add quickcheck in examples/Properties.hs. Coverage measured with
+HPC is about 40%.
+
+5 Jun 2014
+Start to parameterize operations on the collection type. This
+means that where we previously had HMapCxt f x y another
+type parameter with kind [*] -> * is added. This means
+previous uses of HMapCxt f x y become HMap HList f x y.
+This allows hMap to be used with Record and Variant.
+HUpdateAtLabel is similarly generalized.
+
+Rework Variant: the implementation is now similar to Dynamic
+and TIC. Likewise, TIP is implemented in terms of Record.
+
+28 May 2014
+Add tipyLens and ticPrism.
+
+Add a HExtend instance for Variant.
+
+Add functional dependencies to Labelable (and corresponding
+superclasses) to avoid ambiguous types.
+
+26 May 2014
+Add prisms for Variant. This adds a dependency on "profunctors".
+
+Parameterize Labelable on the collection type. This allows
+labelable labels to be used with RecordS or VariantS, where
+the resulting Optic is a Lens or Prism respectively.
+
+Remove recordLabels in favor of labelsOf: a kind variable which
+only appears on the RHS required a lengthy type annotation to fix
+that variable. Pattern matching to convert a `Label (a :: k)` to
+`a :: k` happens later on when another value with kind `k` is a
+available on the LHS.
+
+Improve type errors when accessing missing fields when using
+Labelable labels. Except for HPrism, the error message contains
+`Fail (FieldNotFound "x")`. This involved adding a HUpdateAtLabel
+class and HTPupdateAtLabel type which hides the `n` type
+variable.
+
+Reduce the number of parameters to HMapCxt. The old version could
+be defined in terms of the new version as:
+
+	type HMapCxt_old f a b ha hb = (HMapCxt f a b,
+																	HList a ~ ha,
+																	HList b ~ hb)
+
+Reimplement RecordValues in terms of HMap. The original
+implementation is kept because it avoids the need for
+-XAllowAmbiguousTypes.
+
+Add hMapR and hMapV to map over the values in a Record or the
+value in a Variant respectively. These functions are defined in
+terms of HFmap which may be useful on it's own.
+
+Add a typeable instance for Label3, and change examples/cmdargs.hs
+to use this label kind. This allows the example to work with
+ghc-7.8.2 which lacks an instance Typeable (x :: Symbol).
+
+28 Mar 2014
+	Release 0.3.4.1
+	Fix build with ghc-7.8 broken by changes in HList 0.3.4
+
+20 Feb 2014
+	Release 0.3.4
+	RecordPuns add ( ) syntax
+	Use the tagged package: this removes LVPair and lowercase proxy.
+
+03 Feb 2014
+    Release 0.3.2.0
+	Relax hspec dependency
+
+29 Jan 2014
+	Release 0.3.1.0
+	Work with newer GHC.TypeLits (SingI and similar were moved out)
+
+05 Nov 2013
+	Release 0.3.0.1
+	fix `cabal test'
+
+01 Nov 2013
+	Release 0.3
+	pun quasiquote supports nested records
+	remove HStagedEq
+
+30 Oct 2013
+	Another large patch from Adam Vogt
+	Connect HList with Lens. The Data instance for HList
+	treats HList as a list; a Data instance for HListFlat
+	treats HList as a tuple.
+
+24 Oct 2013
+	Another large patch from Adam Vogt
+	Added HFoldl, HScanr, Data instances for HList, finished the
+	update of Record, the Keyword example
+	becomes full-fledged part of HList
+
+17 Sep 2013
+	Another large patch from Adam Vogt
+	Added HReplicate, SameLength constraint (used by HSequence and HMap),
+	FunCxt for interpreting context applications,
+	convenient syntax for record patterns,
+	clean-up of ApplyAB and general clean-up
+
+31 Aug 2013
+	Large patch from Adam Vogt
+	 Improving the Apply class (ApplyAB) to help type inference
+	 and avoid specifying many type sigatures.
+	 Fix a few of broken code files, in particular RecordAdv.
+
+28 Aug 2013
+	Large patch from Adam Vogt
+	 moved files that need attention to broken/
+	 put HSequence in with HList.HList: fixed the function
+	 added Label6 with GHC Symbols
+	 fix HZip, Variant, examples/TIPTransformM.hs
+	 Many Haddoc changes and beautifications
+	 format some examples for doctest
+
+27 Aug 2013
+	Adam Vogt's patch greatly simplifying makeLabels.
+	Updated TIC.hs
+
+15 Nov 2012
+	Ported basic Records.
+
+31 Oct 2012
+	New file HList/HList.hs contains the implementation of
+	heterogeneous lists. HListPrelude.hs defines operations
+	that work across all heterogeneous collections (lists, TIP,
+	Records, etc).
+	General clean-up, removing obsolete code.
+	Code re-written up to Records.
+
+25 Oct 2012
+	hUnfold
+	hProjectByHNats and hProjectAwayByHNats now take type-level
+	list of naturals as the argument. They are implemented in terms
+	of Unfold. More computation is made purely type-level.
+
+24 Oct 2012
+	Nat, Bool and [*] kinds
+	HList is now GADT
+	Rewriting FakePrelude, HListPrelude, HArray using type families
+	to a large extent, and getting rid of functional dependencies
+
+
+12 Oct 2011
+	Getting rid of overlapping instances in HOccurs
+	Using only one TypeEq. This is the only place with overlapping instances
+	Using ~ operator instead of TypeCast. Deprecating TypeCast
+	Rearrangements of code, removing obsolete code
+	Making sure everything works under GHC 7.0.4
+
+
+19 May 2010
+	Beautification, release and tag 0.2.3 by Adam Vogt
+
+26 April 2010
+	Patches from Adam Vogt to format documentation for Haddoc and
+	to expose MakeLabels
+	Release 0.2.1 by Gwern Branwen
+
+29 March 2010
+	examples/TIPTransformM.hs, the monadic version of
+	TIPTransform.hs
+
+17 February 2010
+	Two patches from Adam Vogt to get the code compile on ghc-6.12
+	and to make Record Typeable instances nonstrict
+
+10-14 January 2010
+        Reverse parameter order for .@.
+	Changed fixity <++
+	Pushed uses of LANGUAGE pragmas further for OOHaskell examples
+
+16 September 2009
+	Added TypeCastGeneric3, TypeEqGeneric3 -- the instances of
+	typeCast and TypeEq that don't require separate compilation.
+	They are like TypeCastGeneric2, TypeEqGeneric2, but integrated
+	with the FakePrelude.
+	Added the example file TIPTransform.hs, a variation on the
+	keyword argument problem posed by Andrew U. Frank.
+	Adjusted the LANGUAGE pragmas, made the examples run without
+	the global -fglasgow-exts
+
+15 September 2009
+	Release 0.2 by Gwern Branwen
+
+11 August 2009
+	Made the regression tests run again.
+	Please do "cd examples; make test-ghc"
+	after any changes.
+	
+11 August 2009
+	Applied a patch from Justin Bailey:
+	Updated fixity declarations for record operators for
+	usability and to better match familiar list and 
+	arithmetic operators.
+	Added Haddock comments for these operators
+
+1 July 2009
+	Applied a set of four patches by Brian Bloniarz:
+	Improve error messages from Record functions using the Fail
+	type class trick
+	Add hRearrange, to permute a Record by labels
+	Expose a few hidden modules, needed for HaskellDB
+	Make hMap, hMapOut & recordLabels maximally lazy
+	Add recordValues, analogous to recordLabels
+	
+29 June 2008
+	Apply the set of patches by gwern0@gmail.com: moving a few
+	files around, cleaning up hlist.cabal
+	
+3 February 2008
+	Fifteen patches by gwern0@gmail.com: Data.HList hierarchy,
+	use of LANGUAGE, -Wall, changes to Cabal files
+	
+19 September 2007
+	Added HMemberM
+	Optimized record projection in Record.hs. The optimization
+	should be especially noticeable for record narrowing.
+	Added NarrowM, which reports both success and failure of narrowing
+	Added equivR, record equivalence modulo field order, with
+	witnessing conversions
+	ConsUnion.hs now checks for record types and treat the latter
+	equivalent modulo the order of fields. This gives optimized,
+	shallower unions.
+	
+13 September 2007
+	Added UnionSymRec, the symmetric union of two records. The code
+	is not very optimal though.
+  
+12 September 2007
+	Added MakeLabels -- Template Haskell code for automatically
+	generating Labels (as in Label4.hs).
+	Renaming of (data) types in Records, to more meaningful names.
+	
+05 September 2007
+	Added ConsUnion.hs -- building homogeneous lists of heterogeneous
+	components by constructing the union on-the-fly.
+	
+12 February 2007
+	Added patches by Einar Karttunen:
+	Move files to subdirectories
+	Add Cabal infrastructure and HList.hs
+	Make it compile with GHC 6.6
+	
+31 October 2006
+	Added HSequence.hs: (monadic) `sequence' for heterogeneous lists.
+	It is also the illustration of TypeCast.
+	
+26 October 2006
+	Added CHList.hs: Potentially infinite, open, statically
+	constrained HLists.
+	
+30 August 2006
+	Record.hs: Labels now are exclusively type-level entities with no
+	run-time representation. The Record API remains the same (although
+	the implementation had to be adjusted).
+	
+31 July	2006
+	TAG Release-2.0. The HList DARCS repository announced.
+	
+22 June	2006
+	VariantP.hs: Our extensible (variant) list supports the regular
+	list API.
+	
+20 June	2006
+	Added VariantP.hs -- polymorphic variants as dual of records.
+	The extensibility problem solved? We can re-use as much as old
+	code as possible, when extending the variant and extending
+	the functions to the extended variant (and get the subtyping for
+	free).
+	
+19 June	2006
+	Added RecordP.hs -- records with unzipped and fully phantom
+	labels. Added tests as well.
+	
+08 May	2006
+	MainPatternMatch.hs -- example of pattern-matching on HList's
+	Records
+	
+08 February 2006
+	Primed hMap/HMap as to enable a new native definition
+	Started ChangeLog, finally.
