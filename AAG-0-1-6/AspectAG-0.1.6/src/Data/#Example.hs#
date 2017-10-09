@@ -1,0 +1,14 @@
+{-# LANGUAGE GADTs,
+             KindSignatures,
+             TypeOperators,
+             TypeFamilies,
+             MultiParamTypeClasses,
+             FlexibleInstances,
+             FlexibleContexts,
+             StandaloneDeriving,
+             UndecidableInstances,
+             FunctionalDependencies,
+             ConstraintKinds,
+             ScopedTypeVariables#-}
+
+
