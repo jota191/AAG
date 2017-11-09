@@ -1,4 +1,4 @@
-o> {-# LANGUAGE TypeInType,
+> {-# LANGUAGE TypeInType,
 >              GADTs,
 >              KindSignatures,
 >              TypeOperators,
@@ -11,7 +11,6 @@ o> {-# LANGUAGE TypeInType,
 >              FunctionalDependencies,
 >              ConstraintKinds,
 >              ScopedTypeVariables,
->              AllowAmbiguousTypes,
 >              UnicodeSyntax#-}
 
 > module AspectAG where
@@ -41,6 +40,7 @@ Input and output families of information flow are represented as
 > labelChi :: Chi ch atts -> Label ch
 > labelChi = labelLVPair
 
+
 Rules, aka definition of attribution computations
 Rules are defined as a mapping from an input family to an output family,
 the added arity is for make them composable
@@ -65,10 +65,12 @@ Definition of a synthesized attribute
 > syndef att val (Fam ic sp) = Fam ic (att .=. val .*. sp)
 
 
-> synmod  ::  (HUpdateAtLabel att val sp sp')
->              --SameLength sp sp')--, HasField att sp' val)
+> synmod  ::  (HUpdateAtLabel att val sp sp',
+>              SameLength sp sp')--, HasField att sp' val)
 >        =>  Label att -> val -> Fam ic sp -> Fam ic sp'
 > synmod att v (Fam ic sp) = Fam ic (hUpdateAtLabel att v sp)
+
+
 
 
  The function 'inhdef' introduces a new inherited attribute for
@@ -92,7 +94,7 @@ Defs is defined inductively over the record vals containing
 the new definitions
 
 > class Defs att (nts :: [Type]) (vals :: [Type])
->            (ic :: [Type]) (ic' :: [Type]) | att nts vals ic -> ic' where
+>            (ic :: [Type]) (ic' :: [Type]) where
 >   defs :: Label att -> HList nts -> Record vals
 >        -> Record ic -> Record ic'
 
@@ -108,8 +110,6 @@ the new definitions
 >          , SingleDef mch mnts att
 >            (Chi (Label (lch,t)) vch)
 >            ic' ic''
->          , HLabelSet (LabelsOf vs)
->          , HAllTaggedLV vs
 >          )
 >  => Defs att nts ((Chi (Label (lch,t)) vch) ': vs) ic ic'' where
 >   defs att nts (Record (HCons pch vs)) ic
@@ -118,7 +118,7 @@ the new definitions
 >             -- anotar este tipo fue la solucion para
 >             -- que el type checker unificara el parametro con el contexto
 >             -- ojo que tengo tipos ambiguos activados para que funcione!
->       where ic'  = defs att nts (mkRecord {-MKR-} vs) ic
+>       where ic'  = defs att nts (Record vs) ic
 >             lch  = labelLVPair pch
 >             mch  = hasLabel lch ic'
 >             mnts = hMember (sndUnwrap lch) nts
@@ -148,7 +148,6 @@ the new definitions
 >            where  lch  = labelLVPair pch
 >                   vch  = valueLVPair pch
 >                   och  = hLookupByLabel lch ic
-
 
 
 
@@ -189,8 +188,7 @@ Primero definimos comSingle, para combinar una regla con un record. Como hay que
 extra (la tecnica de siempre)
 
 
-> class ComSingle (b ∷ 𝔹) f (r₁ ∷ [Type])(r₂ ∷ [Type])
->   | b f r₁ → r₂ where
+> class ComSingle (b ∷ 𝔹) f (r₁ ∷ [Type]) (r₂ ∷ [Type]) | b f r₁ → r₂ where
 >   comSingle ∷ Proxy b → f → Record r₁ → Record r₂
 
 TODO: f es un Tagged (Prd p r), cuando itere de nuevo en el codigo quiero ver si
@@ -199,13 +197,8 @@ rinde expresarlo aca
 b vale True si el label de f aparece en el record,
 vamos con el caso en que no primero, que es el mas facil
 
-> instance ( HLabelSet (Label l : LabelsOf r)
->          , HAllTaggedLV r)
->   => ComSingle 'False
->                (Tagged l v ∷ Type)
->                (r ∷ [Type])
->                (Tagged l v ': r ∷ [Type]) where
->   comSingle _ f (Record r) = mkRecord{-MKR-} (HCons f r)
+> instance ComSingle 'False (f ∷ Type) (r ∷ [Type]) (f ': r ∷ [Type]) where
+>   comSingle _ f (Record r) = Record (HCons f r)
 
 Ahora el caso en que las etiquetas coinciden y hay que mergear reglas:
 
@@ -413,12 +406,17 @@ Vamos por la 2..
 
 
 
-> class Apply f a r {-| f a -> r -} where
+> class HExtend2 (e :: Type) (l::[Type]) (r::[Type]) where {}
+> instance ( HExtend Record e l
+>          , HExtendR Record e l ~ r) => HExtend2 e l r
+
+> class Apply f a r | f a -> r where
 >   apply :: f -> a -> r
 
 
 > instance ( HAllTaggedLV sp
->          , HExtendR Record (Tagged att val) sp ~ sp'
+>          --, HExtendR Record (Tagged att val) sp ~ sp' old
+>          , HExtend2 (Tagged att val) sp sp'--new
 >          , HLabelSet (Label att : LabelsOf sp))
 >            =>
 >   Apply (FnSyn att) (Fam sc ip -> val)
@@ -512,36 +510,29 @@ defined,
 >  usechi' :: Proxy mnts -> Label att -> HList nts
 >         -> (a -> a -> a) -> Record sc -> Maybe a
 
-> instance ( HasField att vch a
->          , Use att nts a scr
->          , HLabelSet (LabelsOf scr)
->          ,  HAllTaggedLV scr)  => 
+> instance (HasField att vch a, Use att nts a scr)  => 
 >          Use' 'True att nts a ((Tagged lch (Record vch)) ': scr) where
 >   usechi' _ att nts oper (Record(HCons fa scr))
->     = Just $ case usechi att nts oper (mkRecord{-Record->MK-} scr) of
+>     = Just $ case usechi att nts oper (Record scr) of
 >                Just r  -> oper (valueLVPair fa # att) r
 >                Nothing -> valueLVPair fa # att
 
-> instance ( Use att nts a scr
->          , HLabelSet (LabelsOf scr)
->          , HAllTaggedLV scr )
+> instance (Use att nts a scr)
 >   => Use' 'False att nts a ((Tagged lch b) ': scr) where
 >   usechi' _ att nts oper (Record(HCons _ scr))
->     = usechi att nts oper (mkRecord{-RMK-}scr)
+>     = usechi att nts oper (Record scr)
 
 
 
 Aspectos por defecto
 Construye un aspecto dada una regla y una lista de producciones
 
-> class DefAspect (deff :: Type) (prds :: [Type]) (rules :: [Type])
->   | deff prds -> rules where
+> class DefAspect (deff :: Type) (prds :: [Type]) (rules :: [Type]) where
 >   defAspect :: deff -> HList prds -> Record rules
 
 > instance DefAspect (deff :: Type) '[] '[] where
 >   defAspect _ _ = emptyRecord
 
-> {-
 > --instance DefAspect....
 > instance ( Poly deff deff'
 >          , HAllTaggedLV (Prd prd deff' ': rules)
@@ -550,7 +541,7 @@ Construye un aspecto dada una regla y una lista de producciones
 >          , DefAspect deff prds rules)
 >    => DefAspect deff (Label prd ': prds) rules' where
 >   defAspect deff (HCons prd prds) =
->     prd .=. poly deff .*. defAspect deff prds -}
+>     prd .=. poly deff .*. defAspect deff prds
 
 
 
@@ -561,7 +552,7 @@ La funcion attAspect actualiza todos los valores de un Record aplicandoles
 una funcion
 
 > class AttAspect (rdef :: Type) (defs :: [Type]) (rules :: [Type])
->       {-| rdef defs -> rules-} where
+>       | rdef defs -> rules where
 >   attAspect :: rdef -> Record defs -> Record rules
 
 > instance AttAspect rdef '[] '[] where
